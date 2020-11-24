@@ -6,7 +6,7 @@
 /*   By: iboeters <iboeters@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/09 18:19:53 by iboeters      #+#    #+#                 */
-/*   Updated: 2020/11/09 18:22:46 by iboeters      ########   odam.nl         */
+/*   Updated: 2020/11/23 13:43:02 by iboeters      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <sys/stat.h>
-# include <signal.h>
 # include <signal.h>
 # include <errno.h>
 # include <limits.h>
@@ -58,10 +57,16 @@ typedef	struct	s_mini{
 	int			in_redir;
 	int			out_redir;
 	int			exit_int;
+	char		q;
 	int			check_export;
 	char		*export_str;
 	char		*nbr;
 	char		*pwd;
+	int			i_tok;
+	int			array_len;
+	int			use_string;
+	int			cmd;
+	int			env_i;
 	t_command	*c;
 	t_command	*pipes_c;
 }				t_mini;
@@ -81,7 +86,7 @@ char			**ft_split_minishell(char const *s, char c, t_mini *mini);
 int				ft_split_commands(char *s, t_mini *mini);
 int				string_count(t_mini *mini, char *s);
 int				check_for_errors(char *s, t_mini *mini);
-int				tokens(t_mini *mini);
+void			tokens(t_mini *mini);
 void			skip_wspaces(char *s, int *i);
 int				is_whitespace(char c);
 int				is_delimiter(char c);
@@ -120,7 +125,6 @@ void			if_quote(int *k, int *j, t_mini *mini);
 void			find_right_env(t_mini *mini, int *i, int *j, int *k);
 void			skip_quoted(char *s, int *i);
 void			print_export(t_mini *mini);
-int				find_substr(char *s, t_mini *mini);
 void			check_quotes(char *s, t_mini *mini);
 void			insertion_sort(int end, int start, int *arr, char **env);
 int				save_commands(t_mini *mini, char *s);
@@ -130,7 +134,25 @@ int				check_output_redir(char *s, t_mini *mini, int *i);
 int				check_semicolon(char *s, t_mini *mini, int *i);
 int				check_redir_end(int *i, char *str, t_mini *mini);
 void			quotes(char **tokens, t_mini *mini);
-void			var_sub(char **tokens, t_mini *mini);
-int				ret_del(char *s, int i);
+void			var_sub(char **tokens, t_mini *mini, int cmd);
+void			signal_child(void);
+void			handle_sigint(int signal);
+void			handle_sigquit(int signal);
+void			malloc_error(void);
+void			get_env_var(int *i, char **token, t_mini *mini, char **str);
+int				dollar_quote(int *i, char **token, t_mini *mini, char **str);
+void			dollar_questionmark(t_mini *mini, char **str, int *i);
+void			expand_tokens(t_mini *mini, char **str, int i, char *env);
+void			expand_tokens_pipes(t_mini *mini, char **str, int i, char *env);
+void			set_open_q(char token, t_mini *mini);
+void			remove_empty_token(t_mini *mini, int remove);
+void			remove_empty_token_pipes(t_mini *mini, int remove);
+void			free_old_tokens(char ***old_tokens);
+void			free_tokens(t_mini *mini, char **array);
+void			free_tokens_pipes(t_mini *mini, char **array);
+void			var_sub(char **tokens, t_mini *mini, int cmd);
+void			close_and_free(t_mini *mini, char **s);
+int				check_semicolon(char *s, t_mini *mini, int *i);
+void			switch_quotes(t_mini *mini, char *q, char *anti_q);
 
 #endif

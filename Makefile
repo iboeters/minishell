@@ -3,18 +3,16 @@
 #                                                         ::::::::             #
 #    Makefile                                           :+:    :+:             #
 #                                                      +:+                     #
-#    By: iboeters <iboeters@student.codam.nl>         +#+                      #
+#    By: lbisscho <lbisscho@student.codam.nl>         +#+                      #
 #                                                    +#+                       #
-#    Created: 2020/11/09 18:59:15 by iboeters      #+#    #+#                  #
-#    Updated: 2020/11/09 19:02:11 by iboeters      ########   odam.nl          #
+#    Created: 2020/11/22 16:52:42 by lbisscho      #+#    #+#                  #
+#    Updated: 2020/11/22 20:32:37 by iboeters      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
 LIBFT = libft.a
-
-GNL = ./gnl/get_next_line.c ./gnl/get_next_line_utils.c
 
 SRCS = ./gnl/get_next_line.c \
 	./gnl/get_next_line_utils.c \
@@ -24,7 +22,6 @@ SRCS = ./gnl/get_next_line.c \
 	pwd.c \
 	quotes.c \
 	envp.c \
-	find_substr.c \
 	tokens.c \
 	check_for_errors.c \
 	mini_utils.c \
@@ -50,7 +47,14 @@ SRCS = ./gnl/get_next_line.c \
 	insertion_sort.c \
 	save_commands.c \
 	check_pip_redir.c \
-	tokens_utils.c
+	mini_utils_2.c \
+	signal_handlers.c \
+	get_env_var.c \
+	expand_tokens.c \
+	expand_tokens_pipes.c \
+	remove_empty_tokens.c \
+	free_stuff_2.c \
+	var_sub.c
 
 FLAGS = -Wall -Werror -Wextra
 
@@ -65,7 +69,7 @@ endif
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(OBJ)
-	gcc $(FLAGS) $^ $(INCL) $(LIBFT) -o $(NAME) -g
+	gcc $(FLAGS) $^ $(INCL) $(LIBFT) -o $(NAME)
 
 $(LIBFT):
 	make -C ./libft

@@ -6,7 +6,7 @@
 /*   By: iboeters <iboeters@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/09 18:18:20 by iboeters      #+#    #+#                 */
-/*   Updated: 2020/11/09 18:18:21 by iboeters      ########   odam.nl         */
+/*   Updated: 2020/11/23 13:04:41 by iboeters      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,20 +37,28 @@ void	skip_wspaces(char *s, int *i)
 
 void	skip_quoted(char *s, int *i)
 {
-	if (s[*i] == '\'')
+	if (s[*i] == '\\' && s[*i + 1] != '\0')
+		(*i) += 2;
+	else if (s[*i] == '\\' && s[*i + 1] == '\0')
+		(*i)++;
+	else if (s[*i] == '"')
+	{
+		(*i)++;
+		while (s[*i] != '\0' && s[*i] != '"')
+		{
+			if (s[*i] == '\\' && s[*i + 1] != '\0')
+				(*i)++;
+			(*i)++;
+		}
+		if (s[*i] == '"')
+			(*i)++;
+	}
+	else if (s[*i] == '\'')
 	{
 		(*i)++;
 		while (s[*i] != '\0' && s[*i] != '\'')
 			(*i)++;
 		if (s[*i] == '\'')
-			(*i)++;
-	}
-	else if (s[*i] == '"')
-	{
-		(*i)++;
-		while (s[*i] != '\0' && s[*i] != '"')
-			(*i)++;
-		if (s[*i] == '"')
 			(*i)++;
 	}
 }
@@ -62,7 +70,7 @@ char	*ft_strdup_free(char **s1)
 
 	s2 = (char *)malloc(sizeof(char) * (ft_strlen(*s1) + 1));
 	if (!s2)
-		return (0);
+		malloc_error();
 	i = 0;
 	while ((*s1)[i] != '\0')
 	{

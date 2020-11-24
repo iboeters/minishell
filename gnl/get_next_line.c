@@ -6,11 +6,12 @@
 /*   By: lbisscho <lbisscho@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/11/20 13:28:36 by lbisscho      #+#    #+#                 */
-/*   Updated: 2020/11/07 14:34:20 by lbisscho      ########   odam.nl         */
+/*   Updated: 2020/11/22 16:39:09 by lbisscho      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include "../minishell.h"
 
 static int	ft_free_tmp(char **tmp, int check, size_t *i)
 {
@@ -36,6 +37,8 @@ static int	ft_next_line_found(char *tmp, size_t *i, char **line, size_t *j)
 static char	*ft_fill_tmp(char *tmp, int *ret)
 {
 	tmp = malloc(1);
+	if (!tmp)
+		malloc_error();
 	if (tmp)
 	{
 		tmp[0] = '\0';
@@ -47,7 +50,10 @@ static char	*ft_fill_tmp(char *tmp, int *ret)
 
 static void	ft_read_join(int fd, char **buf, char **tmp, int *ret)
 {
+	write(2, "  \b\b", 4);
 	*buf = malloc(BUFFER_SIZE + 1);
+	if (!(*buf))
+		malloc_error();
 	if (*buf)
 	{
 		*ret = read(fd, *buf, BUFFER_SIZE);

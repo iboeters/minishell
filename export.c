@@ -6,7 +6,7 @@
 /*   By: iboeters <iboeters@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/09 18:17:51 by iboeters      #+#    #+#                 */
-/*   Updated: 2020/11/09 18:17:52 by iboeters      ########   odam.nl         */
+/*   Updated: 2020/11/15 17:06:38 by iboeters      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ int		check_over_write(char *s, t_mini *mini)
 	while (s[i] != '\0' && s[i] != '=')
 		i++;
 	str = (char *)malloc(sizeof(char) * i + 1);
+	if (!str)
+		malloc_error();
 	i = 0;
 	while (s[i] != '\0' && s[i] != '=')
 	{
@@ -68,9 +70,9 @@ void	correct_export(char **tokens, t_mini *mini, int i)
 {
 	if (tokens[i][0] == '=')
 	{
-		ft_putstr_fd("bash: export: ", 2);
+		ft_putstr_fd("bash: export: `", 2);
 		ft_putstr_fd(tokens[i], 2);
-		ft_putstr_fd(" not a valid identifier\n", 2);
+		ft_putstr_fd("': not a valid identifier\n", 2);
 		mini->exit_int = 1;
 		return ;
 	}
@@ -85,9 +87,9 @@ int		is_al_num_export(char **tokens, t_mini *mini, int i, int *j)
 		if ((ft_isalnum(tokens[i][*j]) == 0 && tokens[i][*j] != '_')
 		|| (ft_isdigit(tokens[i][*j]) == 1 && *j == 0))
 		{
-			ft_putstr_fd("bash: export: ", 2);
+			ft_putstr_fd("bash: export: `", 2);
 			ft_putstr_fd(tokens[i], 2);
-			ft_putstr_fd(" not a valid identifier\n", 2);
+			ft_putstr_fd("': not a valid identifier\n", 2);
 			mini->exit_int = 1;
 			return (1);
 		}
@@ -115,5 +117,4 @@ void	ft_export(char **tokens, int tok_amount, t_mini *mini)
 	}
 	if (i == 1)
 		print_export(mini);
-	mini->exit_int = 0;
 }

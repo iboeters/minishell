@@ -6,7 +6,7 @@
 /*   By: iboeters <iboeters@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/09 18:18:43 by iboeters      #+#    #+#                 */
-/*   Updated: 2020/11/09 18:18:44 by iboeters      ########   odam.nl         */
+/*   Updated: 2020/11/22 16:45:38 by iboeters      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ char	*ft_strjoin_read(char *s1, char *s2)
 		return (0);
 	str3 = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
 	if (!str3)
-		return (0);
+		malloc_error();
 	while (s1[i] != '\0')
 	{
 		str3[i] = s1[i];

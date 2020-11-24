@@ -6,7 +6,7 @@
 /*   By: iboeters <iboeters@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/09 18:19:09 by iboeters      #+#    #+#                 */
-/*   Updated: 2020/11/09 18:19:10 by iboeters      ########   odam.nl         */
+/*   Updated: 2020/11/23 13:46:49 by iboeters      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int		check_tok_end(char *s, int *i)
 	{
 		while (s[*i] != '\0' && s[*i] != '\'' && s[*i] != '"' &&
 		!is_delimiter(s[*i]) && !is_whitespace(s[*i]) && ft_isascii(s[*i]))
-			(*i)++;
+			(*i) = (s[*i] == '\\' && s[*i + 1] != '\0') ? *i + 2 : *i + 1;
 		if (s[*i] != '\'' && s[*i] != '"')
 			return (1);
 	}
@@ -71,12 +71,15 @@ int		tok_end(char *s, int i)
 				return (i);
 		}
 		else if (is_delimiter(s[i]))
-			return (ret_del(s, i));
+		{
+			i = (s[i] == '>' && s[i + 1] == '>') ? i + 2 : i + 1;
+			return (i);
+		}
 		else if (ft_isascii(s[i]))
 		{
 			while (s[i] != '\0' && ft_isascii(s[i]) && s[i] != '\'' &&
 			s[i] != '"' && !is_delimiter(s[i]) && !is_whitespace(s[i]))
-				i++;
+				i = (s[i] == '\\' && s[i + 1] != '\0') ? i + 2 : i + 1;
 			if (s[i] != '\'' && s[i] != '"')
 				return (i);
 		}
@@ -98,10 +101,7 @@ void	create_tokens(int cmd, t_mini *mini)
 	mini->c[cmd].tokens = (char **)malloc(sizeof(char *) *
 	(mini->c[cmd].tok_amount + 1));
 	if (!(mini->c[cmd].tokens))
-	{
-		ft_putstr_fd("bash: Malloc fail\n", 2);
-		exit(1);
-	}
+		malloc_error();
 	while (j < mini->c[cmd].tok_amount)
 	{
 		skip_wspaces(mini->sp_input[cmd], &i);
@@ -113,7 +113,7 @@ void	create_tokens(int cmd, t_mini *mini)
 	mini->c[cmd].tokens[j] = NULL;
 }
 
-int		tokens(t_mini *mini)
+void	tokens(t_mini *mini)
 {
 	int		end;
 	int		cmd;
@@ -121,14 +121,10 @@ int		tokens(t_mini *mini)
 	cmd = 0;
 	mini->c = (t_command *)malloc(sizeof(t_command) * (mini->cmds + 1));
 	if (mini->c == (void*)-1)
-	{
-		ft_putstr_fd("bash: Malloc fail\n", 2);
-		exit(1);
-	}
+		malloc_error();
 	while (cmd < mini->cmds)
 	{
 		create_tokens(cmd, mini);
 		cmd++;
 	}
-	return (0);
 }

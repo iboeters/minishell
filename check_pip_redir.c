@@ -6,7 +6,7 @@
 /*   By: iboeters <iboeters@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/09 18:16:25 by iboeters      #+#    #+#                 */
-/*   Updated: 2020/11/09 18:16:27 by iboeters      ########   odam.nl         */
+/*   Updated: 2020/11/23 12:59:10 by iboeters      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,23 +24,9 @@ int		check_redir_end(int *i, char *str, t_mini *mini)
 		if (str[*i] == '\0')
 		{
 			err("syntax error near unexpected token `newline'", "", 0, mini);
+			mini->exit_int = 258;
 			return (-1);
 		}
-	}
-	return (0);
-}
-
-int		check_semicolon(char *s, t_mini *mini, int *i)
-{
-	while (s[*i] != '\0')
-	{
-		skip_quoted(s, i);
-		if (s[*i] == ';' && s[*i + 1] == ';')
-		{
-			err("syntax error near unexpected token `;;'", "", 0, mini);
-			return (-1);
-		}
-		(*i)++;
 	}
 	return (0);
 }
@@ -61,6 +47,30 @@ int		check_output_redir(char *s, t_mini *mini, int *i)
 			deli[2] = '\'';
 			deli[3] = '\0';
 			err("syntax error near unexpected token ", deli, 0, mini);
+			mini->exit_int = 258;
+			return (-1);
+		}
+	}
+	return (0);
+}
+
+int		piped_deli(t_mini *mini, char *s, int *i, char delimiter)
+{
+	char deli[4];
+
+	if (delimiter == '|' && (is_delimiter(s[*i]) == 1 || s[*i] == ';'))
+	{
+		deli[0] = '`';
+		deli[1] = s[*i];
+		deli[2] = '\'';
+		deli[3] = '\0';
+		(*i)++;
+		while (s[*i] != '\0' && is_whitespace(s[*i]))
+			(*i)++;
+		if (s[*i] == '\0' || is_delimiter(s[*i]))
+		{
+			err("syntax error near unexpected token ", deli, 0, mini);
+			mini->exit_int = 258;
 			return (-1);
 		}
 	}
@@ -86,8 +96,11 @@ int		check_delimiter(char *s, t_mini *mini, int *i)
 			deli[2] = '\'';
 			deli[3] = '\0';
 			err("syntax error near unexpected token ", deli, 0, mini);
+			mini->exit_int = 258;
 			return (-1);
 		}
+		else if (piped_deli(mini, s, i, delimiter) == -1)
+			return (-1);
 	}
 	return (0);
 }
@@ -109,6 +122,7 @@ int		check_pip_redir(int *i, char *s, t_mini *mini)
 			err("syntax error near unexpected token `>>'", "", 0, mini);
 		else
 			err("syntax error near unexpected token `>'", "", 0, mini);
+		mini->exit_int = 258;
 		return (-1);
 	}
 	if (check_output_redir(s, mini, i) == -1)

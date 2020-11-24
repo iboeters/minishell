@@ -6,7 +6,7 @@
 /*   By: iboeters <iboeters@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/09 18:18:16 by iboeters      #+#    #+#                 */
-/*   Updated: 2020/11/09 18:18:17 by iboeters      ########   odam.nl         */
+/*   Updated: 2020/11/22 15:27:04 by iboeters      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,18 +28,6 @@ void	err(char *s1, char *s2, int sterr, t_mini *mini)
 	mini->exit_int = 1;
 }
 
-void	handle_sigint(int signal)
-{
-	ft_putchar_fd('\n', 1);
-	show_command_prompt();
-	(void)signal;
-}
-
-void	handle_sigquit(int signal)
-{
-	(void)signal;
-}
-
 void	set_struct(t_mini *mini)
 {
 	mini->cmds = 0;
@@ -59,23 +47,21 @@ int		main(void)
 
 	mini.env = copy_env();
 	mini.exit_int = 0;
-	signal(SIGQUIT, &handle_sigquit);
-	signal(SIGINT, &handle_sigint);
 	while (1)
 	{
+		signal(SIGQUIT, &handle_sigquit);
+		signal(SIGINT, &handle_sigint);
 		set_struct(&mini);
 		show_command_prompt();
 		mini.input = read_line(&mini);
 		if (ft_split_commands(mini.input, &mini) != -1)
 		{
-			if (mini.sp_input[0] != NULL && mini.sp_input[0][0] == '$')
-				check_for_dollar(&(mini.sp_input[0]), &mini);
 			tokens(&mini);
 			if (multi_line_pipe(&mini) != -1)
 				which_command(&mini);
 			free_stuff(&mini);
 		}
-		if (mini.input)
+		else if (mini.input)
 			free(mini.input);
 	}
 	return (0);
